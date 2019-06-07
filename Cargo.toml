@@ -8,6 +8,11 @@ homepage = "https://github.com/vityafx/cargo-grammarly"
 license = "MIT/Apache-2.0"
 description = "A third-party cargo extension for checking grammar in the documentation and comments."
 edition = "2018"
+keywords = ["grammar", "english", "api", "request", "language"]
+categories = ["development-tools", "development-tools::cargo-plugins"]
+
+[badges]
+travis-ci = { repository = "vityafx/grammarly-rs" }
 
 [[bin]]
 name = "cargo-grammarly"
