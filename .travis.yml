@@ -1,0 +1,21 @@
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+os:
+  - linux
+cache:
+  cargo: true
+  timeout: 900
+before_cache:
+  # Travis can't cache files that are not readable by "others"
+  - chmod -R a+r $HOME/.cargo
+matrix:
+  allow_failures:
+    - nightly
+before_script:
+  - export PATH="$PATH:$HOME/.cargo/bin"
+script:
+  - cargo build --all-features
+  - cargo test --all-features

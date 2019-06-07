@@ -1,0 +1,7 @@
+target
+*.swo
+*.swp
+*.md5
+*.tar
+cooked
+Cook.toml

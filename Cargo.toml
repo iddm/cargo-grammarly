@@ -1,0 +1,22 @@
+[package]
+name = "cargo-grammarly"
+version = "0.1.0"
+authors = ["Victor Polevoy <fx@thefx.co>"]
+readme = "README.md"
+repository = "https://github.com/vityafx/cargo-grammarly"
+homepage = "https://github.com/vityafx/cargo-grammarly"
+license = "MIT/Apache-2.0"
+description = "A third-party cargo extension for checking grammar in the documentation and comments."
+edition = "2018"
+
+[[bin]]
+name = "cargo-grammarly"
+
+[dependencies]
+clap = "2"
+term = "0.5"
+dotenv = "0.14"
+grammarly = "0.2"
+walkdir = "2"
+syn = "0.15"
+proc-macro2 = { version = "0.4", features = ["span-locations"] }
