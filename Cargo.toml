@@ -1,6 +1,6 @@
 [package]
 name = "cargo-grammarly"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Victor Polevoy <fx@thefx.co>"]
 readme = "README.md"
 repository = "https://github.com/vityafx/cargo-grammarly"
@@ -12,7 +12,7 @@ keywords = ["grammar", "english", "api", "request", "language"]
 categories = ["development-tools", "development-tools::cargo-plugins"]
 
 [badges]
-travis-ci = { repository = "vityafx/grammarly-rs" }
+travis-ci = { repository = "vityafx/cargo-grammarly" }
 
 [[bin]]
 name = "cargo-grammarly"
