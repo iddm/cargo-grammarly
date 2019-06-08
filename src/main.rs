@@ -13,11 +13,6 @@ fn main() {
     dotenv::dotenv().ok();
     let api_key = std::env::var(ENVIRONMENT_VARIABLE_NAME).unwrap_or_default();
 
-    #[cfg(not(debug_assertions))]
-    panic::set_hook(Box::new(|panic_info| {
-        term_panic(panic_info.payload().downcast_ref::<String>().unwrap());
-    }));
-
     let _ = clap::App::new(format!("cargo-{}", COMMAND_NAME))
         .about(COMMAND_DESCRIPTION)
         .version(&clap::crate_version!()[..])
