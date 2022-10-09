@@ -15,7 +15,7 @@ fn main() {
 
     let _ = clap::Command::new(format!("cargo-{}", COMMAND_NAME))
         .about(COMMAND_DESCRIPTION)
-        .version(&clap::crate_version!()[..])
+        .version(clap::crate_version!())
         // We have to lie about our binary name since this will be a third party
         // subcommand for cargo, this trick learned from cargo-outdated
         .bin_name("cargo")
@@ -42,7 +42,9 @@ fn fetch_docs(dir: &str) -> Vec<Docs> {
     // dbg!(dir);
 
     let is_rs = |e: &walkdir::DirEntry| -> bool {
-        e.file_type().is_file() && e.path().to_str().unwrap().ends_with(".rs")
+        e.path()
+            .extension()
+            .map_or(false, |ext| ext.eq_ignore_ascii_case("rs"))
     };
     let parse_docs = |path: &String| -> Docs {
         use std::fs;
@@ -77,7 +79,7 @@ fn doc_checked<'a>(api_key: &str, doc: &'a mut FixedDoc) -> &'a mut FixedDoc {
 }
 
 fn docs_checked<'a>(api_key: &str, docs: &'a mut FixedDocs) -> &'a mut FixedDocs {
-    for (_, docs) in &mut docs.fixed {
+    for docs in docs.fixed.values_mut() {
         for doc in docs {
             let _ = doc_checked(api_key, doc);
         }
