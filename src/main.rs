@@ -119,7 +119,7 @@ fn print_response(file: &str, doc: &FixedDoc) {
             writeln!(t, "{:^width$}| ", " ", width = line_width).unwrap();
             write!(
                 t,
-                "{:^width$}| ",
+                "{line:^width$}| ",
                 line = doc.span.start.line,
                 width = line_width
             )
