@@ -9,7 +9,7 @@ license = "MIT/Apache-2.0"
 name = "cargo-grammarly"
 readme = "README.md"
 repository = "https://github.com/vityafx/cargo-grammarly"
-version = "0.1.2"
+version = "0.1.3"
 
 [badges]
 travis-ci = {repository = "vityafx/cargo-grammarly"}
@@ -18,7 +18,7 @@ travis-ci = {repository = "vityafx/cargo-grammarly"}
 name = "cargo-grammarly"
 
 [dependencies]
-clap = "2"
+clap = {version = "4", features = ["cargo", "string"]}
 dotenv = "0.14"
 grammarly = "0.2"
 proc-macro2 = {version = "0.4", features = ["span-locations"]}

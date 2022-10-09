@@ -13,7 +13,7 @@ fn main() {
     dotenv::dotenv().ok();
     let api_key = std::env::var(ENVIRONMENT_VARIABLE_NAME).unwrap_or_default();
 
-    let _ = clap::App::new(format!("cargo-{}", COMMAND_NAME))
+    let _ = clap::Command::new(format!("cargo-{}", COMMAND_NAME))
         .about(COMMAND_DESCRIPTION)
         .version(&clap::crate_version!()[..])
         // We have to lie about our binary name since this will be a third party
@@ -21,8 +21,8 @@ fn main() {
         .bin_name("cargo")
         // We use a subcommand because parsed after `cargo` is sent to the third party plugin
         // which will be interpreted as a subcommand/positional arg by clap
-        .subcommand(clap::SubCommand::with_name(COMMAND_NAME).about(COMMAND_DESCRIPTION))
-        .settings(&[clap::AppSettings::SubcommandRequired])
+        .subcommand(clap::Command::new(COMMAND_NAME).about(COMMAND_DESCRIPTION))
+        .subcommand_required(true)
         .get_matches();
 
     let source_directory = get_source_directory();
