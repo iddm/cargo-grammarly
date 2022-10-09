@@ -100,42 +100,54 @@ fn print_response(file: &str, doc: &FixedDoc) {
     let mut t = term::stdout().unwrap();
 
     if let Some(r) = &doc.check_response {
-        for m in &r.matches {
-            // dbg!(&m);
+        match r {
+            grammarly::Response::Success {
+                software: _,
+                warnings: _,
+                language: _,
+                matches,
+            } => {
+                for m in matches {
+                    // dbg!(&m);
 
-            let line_width = decimal_places(doc.span.start.line) + 2;
+                    let line_width = decimal_places(doc.span.start.line) + 2;
 
-            t.attr(term::Attr::Bold).unwrap();
-            t.fg(term::color::RED).unwrap();
-            write!(t, "error").unwrap();
-            t.fg(term::color::WHITE).unwrap();
-            writeln!(t, ": {}", m.short_message).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            write!(t, "{:>width$}", "-->", width = line_width).unwrap();
-            let _ = t.reset();
-            writeln!(t, " {file}:{line}", file = file, line = doc.span.start.line).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            t.attr(term::Attr::Bold).unwrap();
-            writeln!(t, "{:^width$}| ", " ", width = line_width).unwrap();
-            write!(
-                t,
-                "{line:^width$}| ",
-                line = doc.span.start.line,
-                width = line_width
-            )
-            .unwrap();
-            let _ = t.reset();
-            writeln!(t, "{}", m.sentence).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            t.attr(term::Attr::Bold).unwrap();
-            write!(t, "{:^width$}| ", " ", width = line_width).unwrap();
-            t.fg(term::color::RED).unwrap();
-            writeln!(t, "- {}", m.message).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            writeln!(t, "{:^width$}| \n", " ", width = line_width).unwrap();
-            let _ = t.reset();
-            t.flush().unwrap();
-        }
+                    t.attr(term::Attr::Bold).unwrap();
+                    t.fg(term::color::RED).unwrap();
+                    write!(t, "error").unwrap();
+                    t.fg(term::color::WHITE).unwrap();
+                    writeln!(t, ": {}", m.short_message).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    write!(t, "{:>width$}", "-->", width = line_width).unwrap();
+                    let _ = t.reset();
+                    writeln!(t, " {file}:{line}", file = file, line = doc.span.start.line).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    t.attr(term::Attr::Bold).unwrap();
+                    writeln!(t, "{:^width$}| ", " ", width = line_width).unwrap();
+                    write!(
+                        t,
+                        "{line:^width$}| ",
+                        line = doc.span.start.line,
+                        width = line_width
+                    )
+                    .unwrap();
+                    let _ = t.reset();
+                    writeln!(t, "{}", m.sentence).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    t.attr(term::Attr::Bold).unwrap();
+                    write!(t, "{:^width$}| ", " ", width = line_width).unwrap();
+                    t.fg(term::color::RED).unwrap();
+                    writeln!(t, "- {}", m.message).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    writeln!(t, "{:^width$}| \n", " ", width = line_width).unwrap();
+                    let _ = t.reset();
+                    t.flush().unwrap();
+                }
+            }
+            grammarly::Response::Failure { message } => {
+                eprintln!("grammarly Failure: {}", message);
+            }
+        };
     }
 }
 

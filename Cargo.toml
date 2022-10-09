@@ -20,7 +20,7 @@ name = "cargo-grammarly"
 [dependencies]
 clap = {version = "4", features = ["cargo", "string"]}
 dotenv = "0.15"
-grammarly = "0.2"
+grammarly = "0.3"
 proc-macro2 = {version = "0.4", features = ["span-locations"]}
 syn = "0.15"
 term = "0.5"
