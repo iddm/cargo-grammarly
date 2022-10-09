@@ -10,7 +10,7 @@ const COMMAND_DESCRIPTION: &str =
     "A third-party cargo extension for checking grammar in docs/comments.";
 
 fn main() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let api_key = std::env::var(ENVIRONMENT_VARIABLE_NAME).unwrap_or_default();
 
     let _ = clap::Command::new(format!("cargo-{}", COMMAND_NAME))
