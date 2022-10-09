@@ -1,27 +1,27 @@
 [package]
-name = "cargo-grammarly"
-version = "0.1.2"
 authors = ["Victor Polevoy <fx@thefx.co>"]
+categories = ["development-tools", "development-tools::cargo-plugins"]
+description = "A third-party cargo extension for checking grammar in the documentation and comments."
+edition = "2021"
+homepage = "https://github.com/vityafx/cargo-grammarly"
+keywords = ["grammar", "english", "api", "request", "language"]
+license = "MIT/Apache-2.0"
+name = "cargo-grammarly"
 readme = "README.md"
 repository = "https://github.com/vityafx/cargo-grammarly"
-homepage = "https://github.com/vityafx/cargo-grammarly"
-license = "MIT/Apache-2.0"
-description = "A third-party cargo extension for checking grammar in the documentation and comments."
-edition = "2018"
-keywords = ["grammar", "english", "api", "request", "language"]
-categories = ["development-tools", "development-tools::cargo-plugins"]
+version = "0.1.2"
 
 [badges]
-travis-ci = { repository = "vityafx/cargo-grammarly" }
+travis-ci = {repository = "vityafx/cargo-grammarly"}
 
 [[bin]]
 name = "cargo-grammarly"
 
 [dependencies]
 clap = "2"
-term = "0.5"
 dotenv = "0.14"
 grammarly = "0.2"
-walkdir = "2"
+proc-macro2 = {version = "0.4", features = ["span-locations"]}
 syn = "0.15"
-proc-macro2 = { version = "0.4", features = ["span-locations"] }
+term = "0.5"
+walkdir = "2"
