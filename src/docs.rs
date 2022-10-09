@@ -46,7 +46,7 @@ where
             match tree {
                 TokenTree::Ident(ident) => is_doc = ident == "doc",
                 TokenTree::Group(group) => {
-                    docs.append(Docs::from((stream.0.as_ref().to_owned(), group.stream())))
+                    docs.append(Docs::from((stream.0.as_ref().to_owned(), group.stream())));
                 }
                 TokenTree::Literal(literal) => {
                     if is_doc {
@@ -56,7 +56,7 @@ where
                             .push(literal);
                     }
                 }
-                _ => {}
+                TokenTree::Punct(_) => {}
             };
         }
         docs

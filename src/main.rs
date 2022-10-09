@@ -10,19 +10,19 @@ const COMMAND_DESCRIPTION: &str =
     "A third-party cargo extension for checking grammar in docs/comments.";
 
 fn main() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let api_key = std::env::var(ENVIRONMENT_VARIABLE_NAME).unwrap_or_default();
 
-    let _ = clap::App::new(format!("cargo-{}", COMMAND_NAME))
+    let _ = clap::Command::new(format!("cargo-{}", COMMAND_NAME))
         .about(COMMAND_DESCRIPTION)
-        .version(&clap::crate_version!()[..])
+        .version(clap::crate_version!())
         // We have to lie about our binary name since this will be a third party
         // subcommand for cargo, this trick learned from cargo-outdated
         .bin_name("cargo")
         // We use a subcommand because parsed after `cargo` is sent to the third party plugin
         // which will be interpreted as a subcommand/positional arg by clap
-        .subcommand(clap::SubCommand::with_name(COMMAND_NAME).about(COMMAND_DESCRIPTION))
-        .settings(&[clap::AppSettings::SubcommandRequired])
+        .subcommand(clap::Command::new(COMMAND_NAME).about(COMMAND_DESCRIPTION))
+        .subcommand_required(true)
         .get_matches();
 
     let source_directory = get_source_directory();
@@ -42,7 +42,9 @@ fn fetch_docs(dir: &str) -> Vec<Docs> {
     // dbg!(dir);
 
     let is_rs = |e: &walkdir::DirEntry| -> bool {
-        e.file_type().is_file() && e.path().to_str().unwrap().ends_with(".rs")
+        e.path()
+            .extension()
+            .map_or(false, |ext| ext.eq_ignore_ascii_case("rs"))
     };
     let parse_docs = |path: &String| -> Docs {
         use std::fs;
@@ -77,7 +79,7 @@ fn doc_checked<'a>(api_key: &str, doc: &'a mut FixedDoc) -> &'a mut FixedDoc {
 }
 
 fn docs_checked<'a>(api_key: &str, docs: &'a mut FixedDocs) -> &'a mut FixedDocs {
-    for (_, docs) in &mut docs.fixed {
+    for docs in docs.fixed.values_mut() {
         for doc in docs {
             let _ = doc_checked(api_key, doc);
         }
@@ -100,42 +102,54 @@ fn print_response(file: &str, doc: &FixedDoc) {
     let mut t = term::stdout().unwrap();
 
     if let Some(r) = &doc.check_response {
-        for m in &r.matches {
-            // dbg!(&m);
+        match r {
+            grammarly::Response::Success {
+                software: _,
+                warnings: _,
+                language: _,
+                matches,
+            } => {
+                for m in matches {
+                    // dbg!(&m);
 
-            let line_width = decimal_places(doc.span.start.line) + 2;
+                    let line_width = decimal_places(doc.span.start.line) + 2;
 
-            t.attr(term::Attr::Bold).unwrap();
-            t.fg(term::color::RED).unwrap();
-            write!(t, "error").unwrap();
-            t.fg(term::color::WHITE).unwrap();
-            writeln!(t, ": {}", m.short_message).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            write!(t, "{:>width$}", "-->", width = line_width).unwrap();
-            let _ = t.reset();
-            writeln!(t, " {file}:{line}", file = file, line = doc.span.start.line).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            t.attr(term::Attr::Bold).unwrap();
-            writeln!(t, "{:^width$}| ", " ", width = line_width).unwrap();
-            write!(
-                t,
-                "{:^width$}| ",
-                line = doc.span.start.line,
-                width = line_width
-            )
-            .unwrap();
-            let _ = t.reset();
-            writeln!(t, "{}", m.sentence).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            t.attr(term::Attr::Bold).unwrap();
-            write!(t, "{:^width$}| ", " ", width = line_width).unwrap();
-            t.fg(term::color::RED).unwrap();
-            writeln!(t, "- {}", m.message).unwrap();
-            t.fg(term::color::BLUE).unwrap();
-            writeln!(t, "{:^width$}| \n", " ", width = line_width).unwrap();
-            let _ = t.reset();
-            t.flush().unwrap();
-        }
+                    t.attr(term::Attr::Bold).unwrap();
+                    t.fg(term::color::RED).unwrap();
+                    write!(t, "error").unwrap();
+                    t.fg(term::color::WHITE).unwrap();
+                    writeln!(t, ": {}", m.short_message).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    write!(t, "{:>width$}", "-->", width = line_width).unwrap();
+                    let _ = t.reset();
+                    writeln!(t, " {file}:{line}", file = file, line = doc.span.start.line).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    t.attr(term::Attr::Bold).unwrap();
+                    writeln!(t, "{:^width$}| ", " ", width = line_width).unwrap();
+                    write!(
+                        t,
+                        "{line:^width$}| ",
+                        line = doc.span.start.line,
+                        width = line_width
+                    )
+                    .unwrap();
+                    let _ = t.reset();
+                    writeln!(t, "{}", m.sentence).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    t.attr(term::Attr::Bold).unwrap();
+                    write!(t, "{:^width$}| ", " ", width = line_width).unwrap();
+                    t.fg(term::color::RED).unwrap();
+                    writeln!(t, "- {}", m.message).unwrap();
+                    t.fg(term::color::BLUE).unwrap();
+                    writeln!(t, "{:^width$}| \n", " ", width = line_width).unwrap();
+                    let _ = t.reset();
+                    t.flush().unwrap();
+                }
+            }
+            grammarly::Response::Failure { message } => {
+                eprintln!("grammarly Failure: {}", message);
+            }
+        };
     }
 }
 
